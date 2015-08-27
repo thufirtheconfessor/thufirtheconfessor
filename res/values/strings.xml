@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Thufir the Confessor</string>
+    <string name="cancel">Cancel</string>
+    <string name="dont_keep_screen_on">Don\'t keep screen on</string>
+    <string name="hide_whitespaces">Hide whitespaces</string>
+    <string name="keep_screen_on">Keep screen on</string>
+    <string name="license_text">
+		Thufir the Confessor\n
+		Copyright 2015\n
+		\n
+		This program comes with ABSOLUTELY NO WARRANTY.\n
+		This is free software, and you are welcome to redistribute it
+		under certain conditions.\n
+		\n
+		For details see the manual.
+	</string>
+    <string name="line_wrap">Line wrap</string>
+    <string name="show_whitespaces">Show whitespaces</string>
+    <string name="text_size">Text size</string>
+    <string name="word_wrap">Word wrap</string>
+</resources>
