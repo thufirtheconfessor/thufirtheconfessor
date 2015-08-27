@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html><head>
+<style type="text/css">
+table {border-collapse: collapse}
+td {border: thin solid black; font-family: monospace; white-space: pre}</style>
+</head><body>
+<input id="i" type="file" />
+<table id="o"></table>
+<script type="text/javascript">
+var t=[];
+for (var n=0; 256>n; ++n) {
+ var d=n;
+ for (var k=0; 8>k; ++k)
+  d=(0!==(d&1)?0xedb88320:0)^((d>>1)&0x7fffffff);
+ t[n]=d;
+}
+function cr(c, b) {
+ c=~c;
+ for (var i=0; b.length>i; ++i)
+  c=t[(c^b.charCodeAt(i))&0xff]^((c>>8)&0xffffff);
+ return ~c;
+}
+function h(c) {
+ var s='';
+ for (i=28; 0<=i; i-=4) s+=((c>>i)&0xf).toString(16);
+ return s;
+}
+document.getElementById('i').onchange=function() {
+ var r=new FileReader();
+ r.onload=function(e) {
+  var s=r.result.split('\n');
+  if ((0<s.length) && (''===s[s.length-1])) s.pop();
+  var d=0;
+  o=document.getElementById('o');
+  o.innerHTML='';
+  for (var i=0; s.length>i; ++i) {
+   var l=s[i];
+   d=cr(d, l.trim()+'\n');
+   o.innerHTML+='<tr><td>'+h(d)+'</td><td>'+(i+1)+'</td><td>'
+    +l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+     .replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+    +'</td></tr>';
+  }
+ };
+ r.readAsText(this.files[0]);
+};
+</script>
+</body></html>

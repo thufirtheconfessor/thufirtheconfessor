@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html><body>
+<input id="fr" type="number" value="0" onchange="rs()" />
+<input id="fi" type="file" onchange="l()" />
+<input type="button" value="start" onclick="sr()" />
+<input type="button" value="stop" onclick="sp()" />
+<br />
+<canvas id="ca"></canvas>
+<script type="text/javascript">
+var cae=document.getElementById('ca');
+var coe;
+var fre=document.getElementById('fr');
+var fie=document.getElementById('fi');
+var c, cl, ct=[], dt1=[], dt2, of, td, to=null;
+var br='black', da='white';
+var ch=16, cw=16, cx1, cx2, cy1, cy2, de=300, dh=1,
+ ds, dw=1, fr, hh, id=2000, th=32, tw=32, ww;
+function cp(s, d, l) {
+ if (s<dt1.length)
+  for (var l2=Math.min(l, dt1.length-s); 0<l2; --l,--l2,++s,++d)
+   td[d]=dt1[s];
+ if (0<l) {
+  s-=dt1.length;
+  for (var l2=Math.min(l, dt2.length-s); 0<l2; --l,--l2,++s,++d)
+   td[d]=dt2[s];
+  for (; 0<l; --l,++d)
+   td[d]=0;
+ }
+}
+function cr(c, o, l) {
+ c=~c;
+ for (; 0<l; --l,++o)
+  c=ct[(c^td[o])&0xff]^((c>>8)&0xffffff);
+ return ~c;
+}
+function d(x, y, i) {
+ f(3*tw+x*cw, 3*th+y*ch, cw, ch, td[i]&1);
+ td[i]>>=1;
+}
+function e(c, d, t) {
+ var s=(1+2*d)*t-16*d*c;
+ if (0<s) {
+  c+=Math.floor(s/(16*d));
+  if (0!==s%(16*d)) ++c;
+ }
+ return c;
+}
+function em() {
+ f(0, 0, ww, hh, false);
+ t(1, 1);
+ for (var i=dw; 0<i; --i) t(1+2*i, 1);
+ t(-4, 1);
+ t(-2, 1);
+ for (var i=dh; 0<i; --i) t(1, 1+2*i);
+ t(1, -2);
+ t(-2, -2);
+}
+function f(x, y, w, h, b) {
+ coe.fillStyle=b?br:da;
+ coe.fillRect(x, y, w, h);
+}
+function i() {
+ sp();
+ while (dt1.length+dt2.length>of) {
+  td[0]=cl?0xa5:0x5a;
+  for (var di=0, ds=dh*dw; ds>di; ++di) {
+   var dj=(0===di)?1:0;
+   cp(of, 32*di+dj, 28-dj);
+   of+=28-dj;
+   c=cr(c, 32*di, 28);
+   for (var cc=c, tdc=4, tdi=32*di+28; 0<tdc; --tdc, ++tdi) {
+    td[tdi]=cc&0xff;
+    cc>>=8;
+   }
+  }
+  cl=!cl;
+  if ((fr<=of) && (dt1.length+dt2.length>of)) {
+   to=setTimeout(i, de);
+   break;
+  }
+ }
+ coe=cae.getContext('2d');
+ em();
+ for (var tdc=8, tdi=1, yy=0; 16*dh>yy; ++yy) {
+  var my=cy1===yy, sy=(0===yy) || (cy2===yy);
+  for (var xx=0; 16*dw>xx; ++xx) {
+   var mx=cx1===xx, sx=(0===xx) || (cx2===xx);
+   if ((sx && sy) || (mx && sy) || (sx && my))
+    d(xx, yy, 0);
+   else {
+    d(xx, yy, tdi);
+    --tdc;
+    if (0>=tdc) {
+     ++tdi;
+     tdc=8;
+    }
+   }
+  }
+ }
+ coe=null;
+}
+function l() {
+ if (1!==fie.files.length) {
+  return;
+ }
+ var r=new FileReader();
+ r.onload=function(e) {
+  rs();
+  dt1=[];
+  dt2=new Uint8Array(r.result);
+  var fn=fie.files[0].name;
+  dt1.push(fn.length);
+  for (var ii=0; fn.length>ii; ++ii)
+   dt1.push(fn.charCodeAt(ii)&0xff);
+  for (var ii=0; 32>ii; ii+=8)
+   dt1.push((dt2.length>>ii)&0xff);
+ };
+ r.readAsArrayBuffer(fie.files[0]);
+}
+function rs() {
+ sp();
+ ch=e(ch, dh, th);
+ cw=e(cw, dw, tw);
+ hh=4*th+16*dh*ch;
+ ww=6*tw+16*dw*cw;
+ ds=28*dh*dw-1;
+ cx1=8*dw;
+ cx2=16*dw-1;
+ cy1=8*dh;
+ cy2=16*dh-1;
+ td=new Uint8Array(32*dh*dw);
+ cae.width=ww;
+ cae.height=hh;
+ coe=cae.getContext('2d');
+ em();
+ coe=null;
+}
+function sp() {
+ if (null!==to) {
+  clearTimeout(to);
+  to=null;
+ }
+}
+function sr() {
+ rs();
+ if (0>=dt1.length) {
+  return;
+ }
+ fr=parseInt(fre.value);
+ fr+=ds-dt1.length;
+ c=(dh<<16)|dw;
+ cl=false;
+ of=0;
+ to=setTimeout(i, id);
+}
+function t(x, y) {
+ x*=tw;
+ if (0>x) x+=ww;
+ y*=th;
+ if (0>y) y+=hh;
+ f(x, y, tw, th, true);
+}
+for (var n=0; 256>n; ++n) {
+ var q=n;
+ for (var k=0; 8>k; ++k)
+  q=(0!==(q&1)?0xedb88320:0)^((q>>1)&0x7fffffff);
+ ct[n]=q;
+}
+rs();
+l();
+</script>
+</body></html>
